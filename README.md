@@ -30,7 +30,9 @@ Then set `FHEM_SOURCE_ROOT` to your external FHEM tree, e.g.
 
 - `default`: basic FHEM dev setup
 - `webauth-live`: `allowed` + `WebAuth` example with a repo-local `Caddy` proxy
+  and a profile-local `caddy` devcontainer feature
 - `webauth-only`: strict header auth example with a repo-local `Caddy` proxy
+  and a profile-local `caddy` devcontainer feature
 
 ## SVN Sync
 
