@@ -1,0 +1,94 @@
+name: FHEM Unit Tests
+
+on:
+  pull_request:
+    paths:
+      - 'FHEM/**'
+      - 'lib/**'
+      - 't/**'
+      - 'cpanfile'
+      - '.github/workflows/fhem_test.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'FHEM/**'
+      - 'lib/**'
+      - 't/**'
+      - 'cpanfile'
+      - '.github/workflows/fhem_test.yml'
+  schedule:
+    - cron: '43 17 * * 1'
+
+jobs:
+  update_controls:
+    if: github.event_name == 'push'
+    env:
+      CONTROLS_FILENAME: controls_${{ github.event.repository.name }}.txt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        id: branch
+        run: echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Update controls file
+        uses: fhem/fhem-controls-actions@v2
+        with:
+          filename: ${{ env.CONTROLS_FILENAME }}
+      - name: Update CHANGED
+        run: |
+          log="$(date +'%Y-%m-%d') - $(git log -1 --pretty=%B)"
+          {
+            printf '%s\n\n' "$log"
+            cat CHANGED 2>/dev/null || true
+          } > CHANGED.new
+          mv CHANGED.new CHANGED
+      - name: Commit generated files
+        run: |
+          git config --global user.email action@github.com
+          git config --local user.name 'GitHub Action'
+          git add CHANGED "${CONTROLS_FILENAME}" || true
+          if ! git diff --cached --quiet; then
+            git commit -m 'Automatic update of controls and CHANGED'
+          fi
+      - name: Push generated files
+        uses: ad-m/github-push-action@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch.outputs.name }}
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        perl: ['5.28', '5.32']
+    name: Perl ${{ matrix.perl }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shogo82148/actions-setup-perl@v1.38.1
+        with:
+          perl-version: ${{ matrix.perl }}
+          install-modules-with: cpanm
+          install-modules-args: --notest
+      - name: Install CPAN dependencies
+        run: cpanm --installdeps . --notest
+      - name: Install FHEM via debian nightly
+        uses: fhem/setup-fhem@v1.0.1
+      - name: Change ownership of /opt/fhem
+        run: sudo chown -R --reference=cpanfile /opt/fhem
+      - name: Run helper module tests
+        run: prove -I lib -r -vv t/FHEM/Core/Authentication
+      - name: Run FHEM testsuite
+        env:
+          FHEM_DIR: /opt/fhem
+        run: |
+          cp -r FHEM/* ${FHEM_DIR}/FHEM/
+          mkdir -p ${FHEM_DIR}/lib
+          cp -r lib/* ${FHEM_DIR}/lib/
+          cd ${FHEM_DIR}
+          prove --exec 'perl fhem.pl -t' -I FHEM -r -vv \
+            ${GITHUB_WORKSPACE}/t/FHEM/01_FHEMWEB \
+            ${GITHUB_WORKSPACE}/t/FHEM/98_WebAuth
