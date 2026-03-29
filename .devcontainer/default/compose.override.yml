@@ -1,0 +1,4 @@
+services:
+  fhem-dev:
+    environment:
+      CONFIGTYPE: .devcontainer/config/fhem.cfg

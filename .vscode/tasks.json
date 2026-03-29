@@ -1,0 +1,74 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "testFile",
+      "type": "promptString",
+      "description": "Path to the .t test file, relative to the repo test root",
+      "default": "FHEM/98_WebAuth/10_authenticate.t"
+    }
+  ],
+  "tasks": [
+    {
+      "label": "FHEM: run all tests",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-all-tests.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "FHEM: run single test",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-single-test.sh",
+        "${input:testFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "FHEM: pick and run test",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/pick-fhem-test.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "FHEM: SVN checkout",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/svn-checkout.sh"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "FHEM: Sync Module -> SVN",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/sync-module-to-svn.sh"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

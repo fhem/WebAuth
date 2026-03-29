@@ -1,0 +1,41 @@
+{
+  "name": "FHEM Dev (WebAuth Live)",
+  "dockerComposeFile": [
+    "../compose.yml",
+    "../compose.webauth-proxy.yml",
+    "../compose.addon-svn.yml",
+    "compose.override.yml"
+  ],
+  "service": "fhem-dev",
+  "workspaceFolder": "/workspace/WebAuth",
+  "remoteUser": "sven",
+  "forwardPorts": [
+    8083,
+    8084
+  ],
+  "portsAttributes": {
+    "8083": {
+      "label": "FHEM Web",
+      "onAutoForward": "openBrowser"
+    },
+    "8084": {
+      "label": "FHEM WebAuth Proxy",
+      "onAutoForward": "notify"
+    }
+  },
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "richterger.perl",
+        "eamodio.gitlens",
+        "openai.chatgpt",
+        "ms-python.python"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {}
+  }
+}

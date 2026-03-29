@@ -1,0 +1,10 @@
+services:
+  fhem-dev:
+    build:
+      dockerfile: .devcontainer/Dockerfile.webauth-proxy
+    command:
+      - /bin/bash
+      - -lc
+      - bash /workspace/WebAuth/.devcontainer/scripts/bootstrap-worktree.sh && caddy run --config /workspace/WebAuth/.devcontainer/Caddyfile >/opt/fhem-dev-data/log/caddy.log 2>&1 & exec /entry.sh start
+    ports:
+      - "${WEBAUTH_PROXY_PORT:-18084}:8084"

@@ -1,0 +1,4 @@
+services:
+  fhem-dev:
+    environment:
+      CONFIGTYPE: contrib/WebAuth/fhem-live.cfg

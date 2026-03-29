@@ -1,0 +1,49 @@
+# Managed by FHEM Devcontainer Toolkit.
+name: webauth-dev-env
+
+services:
+  fhem-dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        LOCAL_UID: 1000
+        LOCAL_GID: 1000
+    image: webauth-dev-local:bookworm
+    container_name: webauth-dev
+    init: true
+    entrypoint: []
+    working_dir: /workspace/WebAuth
+    command:
+      - /bin/bash
+      - -lc
+      - bash /workspace/WebAuth/.devcontainer/scripts/bootstrap-worktree.sh && exec /entry.sh start
+    environment:
+      TZ: Europe/Berlin
+      HOME: /home/sven
+      XDG_CONFIG_HOME: /opt/fhem-dev-data/home-config
+      SVN_EDITOR: "code --wait"
+      VISUAL: "code --wait"
+      EDITOR: "code --wait"
+      LOGFILE: /opt/fhem-dev-data/log/fhem-%Y-%m-%d.log
+      RESTART: 0
+      FHEM_UID: 1000
+      FHEM_GID: 1000
+      MODULE_REPO_ROOT: /workspace/WebAuth
+      MODULE_OVERLAY_ROOT: ${MODULE_OVERLAY_ROOT:-/workspace/WebAuth}
+      FHEM_TOOLKIT_ROOT: ${FHEM_TOOLKIT_ROOT:-/workspace/fhem-devcontainer-toolkit}
+      FHEM_SOURCE_ROOT: ${FHEM_SOURCE_ROOT:-/workspace/WebAuth/fhem}
+      FHEM_TOOLKIT_FEATURES: ${FHEM_TOOLKIT_FEATURES:-}
+    ports:
+      - "${FHEM_WEB_PORT:-18083}:8083"
+      - "${FHEM_TELNET_PORT:-17072}:7072"
+    volumes:
+      - ..:/workspace/WebAuth
+      - ../../fhem-devcontainer-toolkit:/workspace/fhem-devcontainer-toolkit
+      - ${HOME}/.gitconfig:/home/sven/.gitconfig:ro
+      - fhem_dev_worktree:/opt/fhem
+      - fhem_dev_data:/opt/fhem-dev-data
+
+volumes:
+  fhem_dev_worktree:
+  fhem_dev_data:

@@ -1,0 +1,7 @@
+services:
+  fhem-dev:
+    environment:
+      FHEM_SOURCE_ROOT: /workspace/fhem-source/fhem
+      MODULE_OVERLAY_ROOT: /workspace/WebAuth
+    volumes:
+      - ../../fhem-source:/workspace/fhem-source

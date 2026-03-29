@@ -1,0 +1,27 @@
+{
+  "//": "Managed by FHEM Devcontainer Toolkit.",
+  "name": "FHEM Dev",
+  "dockerComposeFile": [
+    "../compose.yml",
+    "compose.override.yml"
+  ],
+  "service": "fhem-dev",
+  "workspaceFolder": "/workspace/WebAuth",
+  "remoteUser": "sven",
+  "forwardPorts": [8083],
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "richterger.perl",
+        "eamodio.gitlens",
+        "openai.chatgpt",
+        "ms-python.python"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {}
+  }
+}
