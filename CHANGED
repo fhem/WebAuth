@@ -1,3 +1,7 @@
+2026-03-29 - Merge pull request #1 from fhem/feature/adopt-mod-template
+
+Feature/adopt mod template
+
 2026-03-30 - Initial WebAuth repository import
 
 - Import WebAuth module, tests, and toolkit-based devcontainer
