@@ -1,7 +1,5 @@
 services:
   fhem-dev:
-    build:
-      dockerfile: .devcontainer/Dockerfile.webauth-proxy
     command:
       - /bin/bash
       - -lc

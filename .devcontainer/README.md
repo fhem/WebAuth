@@ -14,5 +14,6 @@ Local, user-specific overrides belong in:
 These files are intentionally not versioned.
 
 The `webauth-live` and `webauth-only` profiles add a repo-local `Caddy` proxy
-layer from `.devcontainer/compose.webauth-proxy.yml`. The default profile stays
-on the generic toolkit core without a reverse proxy.
+layer from `.devcontainer/compose.webauth-proxy.yml` and install `caddy` via a
+devcontainer feature in the profile-specific `devcontainer.json`. The default
+profile stays on the generic toolkit core without a reverse proxy.
