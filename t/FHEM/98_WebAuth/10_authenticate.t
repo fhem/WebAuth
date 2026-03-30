@@ -62,7 +62,7 @@ subtest 'matching header policy authenticates request' => sub {
   my $client = make_client();
   my %headers = (
     _Path => '/fhem',
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Auth-Source' => 'oauth2-proxy',
   );
 
@@ -79,7 +79,7 @@ subtest 'nested header policy authenticates request' => sub {
   my $client = make_client();
   my %headers = (
     _Path => '/fhem',
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Forwarded-Groups' => 'users,admins',
   );
 
@@ -96,7 +96,7 @@ subtest 'non-matching header policy denies access without basic challenge' => su
   my $client = make_client();
   my %headers = (
     _Path => '/fhem',
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Auth-Source' => 'other',
   );
 
@@ -177,7 +177,7 @@ subtest 'WebAuth coexists with allowed basicAuth when header policy matches' => 
   my $client = make_client();
   my %headers = (
     _Path => '/fhem',
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Auth-Source' => 'oauth2-proxy',
   );
 

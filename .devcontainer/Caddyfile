@@ -1,6 +1,6 @@
 :8084 {
   reverse_proxy 127.0.0.1:8083 {
-    header_up X-Forwarded-User sven
+    header_up X-Forwarded-User demo-user
     header_up X-Auth-Source oauth2-proxy
   }
 }

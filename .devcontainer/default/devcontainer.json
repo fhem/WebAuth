@@ -7,7 +7,7 @@
   ],
   "service": "fhem-dev",
   "workspaceFolder": "/workspace/WebAuth",
-  "remoteUser": "sven",
+  "remoteUser": "dev",
   "forwardPorts": [8083],
   "shutdownAction": "stopCompose",
   "overrideCommand": false,

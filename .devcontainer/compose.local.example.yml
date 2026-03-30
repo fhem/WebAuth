@@ -3,5 +3,10 @@ services:
     environment:
       FHEM_SOURCE_ROOT: /workspace/fhem-source/fhem
       MODULE_OVERLAY_ROOT: /workspace/WebAuth
+      LOCAL_USER: dev
+      LOCAL_UID: 1000
+      LOCAL_GID: 1000
     volumes:
       - ../../fhem-source:/workspace/fhem-source
+      # Optional: forward host git identity into the container.
+      # - ${HOME}/.gitconfig:/home/${LOCAL_USER:-dev}/.gitconfig:ro
