@@ -16,8 +16,3 @@ These files are intentionally not versioned.
 The scaffold uses a generic container user named `dev` by default. Override
 `LOCAL_USER`, `LOCAL_UID`, and `LOCAL_GID` in local compose overrides if your
 host setup needs matching ownership or different home-directory mount targets.
-
-The `webauth-live` and `webauth-only` profiles add a repo-local `Caddy` proxy
-layer from `.devcontainer/compose.webauth-proxy.yml` and install `caddy` via a
-devcontainer feature in the profile-specific `devcontainer.json`. The default
-profile stays on the generic toolkit core without a reverse proxy.

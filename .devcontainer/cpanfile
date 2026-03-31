@@ -1,0 +1,2 @@
+requires 'Perl::Critic';
+requires 'Test2::Suite';

@@ -26,6 +26,11 @@ Then set `FHEM_SOURCE_ROOT` to your external FHEM tree, e.g.
 `/workspace/fhem-mirror/fhem`, and mount that checkout in
 `.devcontainer/compose.local.yml`.
 
+Perl dependencies are split into two layers:
+
+- `.devcontainer/cpanfile`: generic toolkit/devcontainer dependencies
+- `cpanfile`: WebAuth-specific dependencies used for tests and local development
+
 ## Devcontainer Profiles
 
 - `default`: basic FHEM dev setup
