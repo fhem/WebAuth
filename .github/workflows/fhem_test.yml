@@ -55,7 +55,7 @@ jobs:
         env:
           CONTROLS_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ steps.branch.outputs.name }}/${{ env.CONTROLS_FILENAME }}
         run: |
-          perl -0pi -e 's{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\n.*?\n<!-- END GENERATED FHEM UPDATE COMMAND -->}{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\nupdate add $ENV{CONTROLS_URL}\n<!-- END GENERATED FHEM UPDATE COMMAND -->}s' README.md
+          perl -0pi -e 's{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\n```text\n.*?\n```\n<!-- END GENERATED FHEM UPDATE COMMAND -->}{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\n```text\nupdate add $ENV{CONTROLS_URL}\n```\n<!-- END GENERATED FHEM UPDATE COMMAND -->}s' README.md
       - name: Update CHANGED
         run: |
           log="$(date +'%Y-%m-%d') - $(git log -1 --pretty=%B)"
