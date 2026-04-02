@@ -41,11 +41,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update controls file
-        uses: fhem/fhem-controls-actions@v3
+        uses: fhem/fhem-controls-actions@v3.0.1
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
       - name: Add lib manifest entries to controls file
-        uses: fhem/fhem-controls-actions@v3
+        uses: fhem/fhem-controls-actions@v3.0.1
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
           directory: lib
