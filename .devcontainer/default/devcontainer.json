@@ -3,11 +3,12 @@
   "name": "FHEM Dev",
   "dockerComposeFile": [
     "../compose.yml",
+    "../compose.local.yml",
     "compose.override.yml"
   ],
   "service": "fhem-dev",
   "workspaceFolder": "/workspace/WebAuth",
-  "remoteUser": "sven",
+  "remoteUser": "dev",
   "forwardPorts": [8083],
   "shutdownAction": "stopCompose",
   "overrideCommand": false,
@@ -22,6 +23,8 @@
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {}
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/dirien/devcontainer-feature-codex/codex:0": {}
   }
 }

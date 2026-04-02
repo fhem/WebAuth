@@ -3,5 +3,17 @@ services:
     environment:
       FHEM_SOURCE_ROOT: /workspace/fhem-source/fhem
       MODULE_OVERLAY_ROOT: /workspace/WebAuth
+      LOCAL_USER: dev
+      LOCAL_UID: 1000
+      LOCAL_GID: 1000
     volumes:
       - ../../fhem-source:/workspace/fhem-source
+      # Optional: forward host git identity into the container.
+      # - ${HOME}/.gitconfig:/home/${LOCAL_USER:-dev}/.gitconfig:ro
+      # Optional: project-local Codex config.
+      # - ./locals/codex/config.toml:/home/${LOCAL_USER:-dev}/.codex/config.toml:ro
+      # Optional: forward selected persistent Codex state from the host.
+      # - ${HOME}/.codex/auth.json:/home/${LOCAL_USER:-dev}/.codex/auth.json:ro
+      # - ${HOME}/.codex/history.jsonl:/home/${LOCAL_USER:-dev}/.codex/history.jsonl
+      # - ${HOME}/.codex/sessions:/home/${LOCAL_USER:-dev}/.codex/sessions
+      # - ${HOME}/.codex/skills:/home/${LOCAL_USER:-dev}/.codex/skills

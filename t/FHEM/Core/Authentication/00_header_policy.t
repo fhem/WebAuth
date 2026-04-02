@@ -70,7 +70,7 @@ subtest 'evaluate AND policy requires all rules' => sub {
   };
 
   my ($ok, $error) = evaluate_header_auth_policy($policy, {
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Auth-Source' => 'oauth2-proxy',
   });
 
@@ -78,7 +78,7 @@ subtest 'evaluate AND policy requires all rules' => sub {
   is($ok, 1, 'AND policy matches when all rules match');
 
   ($ok, $error) = evaluate_header_auth_policy($policy, {
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Auth-Source' => 'other',
   });
 
@@ -119,7 +119,7 @@ subtest 'evaluate nested policies' => sub {
   };
 
   my ($ok, $error) = evaluate_header_auth_policy($policy, {
-    'X-Forwarded-User' => 'alice',
+    'X-Forwarded-User' => 'demo-user',
     'X-Forwarded-Groups' => 'users,admins',
   });
 
