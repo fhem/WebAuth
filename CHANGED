@@ -1,3 +1,5 @@
+2026-04-02 - workflow: include authentication helper in controls
+
 2026-04-02 - Merge pull request #4 from fhem/codex/manifest-driven-controls
 
 [codex] Align controls update with manifest-managed files
