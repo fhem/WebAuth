@@ -50,5 +50,7 @@ The GitHub workflow generates [`controls_WebAuth.txt`](/workspace/WebAuth/contro
 per branch. To add this branch as an update source in FHEM, use:
 
 ```text
+<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
 update add https://raw.githubusercontent.com/fhem/WebAuth/codex/manifest-driven-controls/controls_WebAuth.txt
+<!-- END GENERATED FHEM UPDATE COMMAND -->
 ```
