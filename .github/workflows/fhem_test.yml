@@ -5,6 +5,9 @@ on:
     paths:
       - 'FHEM/**'
       - 'lib/**'
+      - 'contrib/WebAuth/**'
+      - 'controls_WebAuth.txt'
+      - '.devcontainer/svn-manifest.txt'
       - 't/**'
       - 'cpanfile'
       - '.github/workflows/fhem_test.yml'
@@ -14,6 +17,9 @@ on:
     paths:
       - 'FHEM/**'
       - 'lib/**'
+      - 'contrib/WebAuth/**'
+      - 'controls_WebAuth.txt'
+      - '.devcontainer/svn-manifest.txt'
       - 't/**'
       - 'cpanfile'
       - '.github/workflows/fhem_test.yml'
@@ -35,9 +41,16 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update controls file
-        uses: fhem/fhem-controls-actions@v2
+        uses: fhem/fhem-controls-actions@v3
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
+      - name: Add lib manifest entries to controls file
+        uses: fhem/fhem-controls-actions@v3
+        with:
+          filename: ${{ env.CONTROLS_FILENAME }}
+          directory: lib
+          extension: .pm
+          writemode: a
       - name: Update CHANGED
         run: |
           log="$(date +'%Y-%m-%d') - $(git log -1 --pretty=%B)"
