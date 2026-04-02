@@ -51,6 +51,6 @@ per branch. To add this branch as an update source in FHEM, use:
 
 <!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
 ```text
-update add https://raw.githubusercontent.com/fhem/WebAuth/main/controls_WebAuth.txt
+update add https://raw.githubusercontent.com/fhem/WebAuth/codex/fix-controls-lib-path/controls_WebAuth.txt
 ```
 <!-- END GENERATED FHEM UPDATE COMMAND -->

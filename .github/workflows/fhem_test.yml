@@ -44,11 +44,11 @@ jobs:
         uses: fhem/fhem-controls-actions@v3.0.1
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
-      - name: Add lib manifest entries to controls file
+      - name: Add authentication helper entries to controls file
         uses: fhem/fhem-controls-actions@v3.0.1
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
-          directory: lib
+          directory: lib/FHEM/Core/Authentication
           extension: .pm
           writemode: a
       - name: Update README branch-specific update command
