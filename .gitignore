@@ -1,5 +1,7 @@
 .devcontainer/compose.local.yml
 .devcontainer/.env.local
+.devcontainer/locals
+.codex/
 !Build/
 .last_cover_stats
 /META.yml
@@ -8,7 +10,7 @@
 *.o
 *.pm.tdy
 *.bs
-
+.vscode/perl-lang
 # Devel::Cover
 cover_db/
 # Devel::NYTProf

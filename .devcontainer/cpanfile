@@ -1,2 +1,3 @@
 requires 'Perl::Critic';
+requires 'Perl::LanguageServer';
 requires 'Test2::Suite';
