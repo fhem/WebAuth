@@ -5,15 +5,21 @@ on:
     paths:
       - 'FHEM/**'
       - 'lib/**'
+      - 'contrib/WebAuth/**'
+      - 'controls_WebAuth.txt'
+      - 'README.md'
+      - '.devcontainer/svn-manifest.txt'
       - 't/**'
       - 'cpanfile'
       - '.github/workflows/fhem_test.yml'
   push:
-    branches:
-      - main
     paths:
       - 'FHEM/**'
       - 'lib/**'
+      - 'contrib/WebAuth/**'
+      - 'controls_WebAuth.txt'
+      - 'README.md'
+      - '.devcontainer/svn-manifest.txt'
       - 't/**'
       - 'cpanfile'
       - '.github/workflows/fhem_test.yml'
@@ -35,9 +41,21 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update controls file
-        uses: fhem/fhem-controls-actions@v2
+        uses: fhem/fhem-controls-actions@v3.0.1
         with:
           filename: ${{ env.CONTROLS_FILENAME }}
+      - name: Add lib manifest entries to controls file
+        uses: fhem/fhem-controls-actions@v3.0.1
+        with:
+          filename: ${{ env.CONTROLS_FILENAME }}
+          directory: lib
+          extension: .pm
+          writemode: a
+      - name: Update README branch-specific update command
+        env:
+          CONTROLS_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ steps.branch.outputs.name }}/${{ env.CONTROLS_FILENAME }}
+        run: |
+          perl -0pi -e 's{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\n```text\n.*?\n```\n<!-- END GENERATED FHEM UPDATE COMMAND -->}{<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->\n```text\nupdate add $ENV{CONTROLS_URL}\n```\n<!-- END GENERATED FHEM UPDATE COMMAND -->}s' README.md
       - name: Update CHANGED
         run: |
           log="$(date +'%Y-%m-%d') - $(git log -1 --pretty=%B)"
@@ -50,7 +68,7 @@ jobs:
         run: |
           git config --global user.email action@github.com
           git config --local user.name 'GitHub Action'
-          git add CHANGED "${CONTROLS_FILENAME}" || true
+          git add CHANGED README.md "${CONTROLS_FILENAME}" || true
           if ! git diff --cached --quiet; then
             git commit -m 'Automatic update of controls and CHANGED'
           fi
@@ -64,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        perl: ['5.28', '5.32']
+        perl: ['5.28', '5.32', '5.38']
     name: Perl ${{ matrix.perl }}
     steps:
       - uses: actions/checkout@v6

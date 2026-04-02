@@ -43,3 +43,14 @@ Perl dependencies are split into two layers:
 
 The task `FHEM: Sync Module -> SVN` syncs only the paths listed in
 `.devcontainer/svn-manifest.txt`.
+
+## FHEM Update
+
+The GitHub workflow generates [`controls_WebAuth.txt`](/workspace/WebAuth/controls_WebAuth.txt)
+per branch. To add this branch as an update source in FHEM, use:
+
+<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
+```text
+update add https://raw.githubusercontent.com/fhem/WebAuth/codex/manifest-driven-controls/controls_WebAuth.txt
+```
+<!-- END GENERATED FHEM UPDATE COMMAND -->
