@@ -1,3 +1,7 @@
+2026-04-03 - Merge pull request #10 from fhem/codex/trusted-proxy-dns
+
+[codex] Resolve trustedProxy hostnames via DNS
+
 2026-04-03 - workflow: use BOT_PUSH_TOKEN for generated updates
 
 2026-04-03 - workflow: remove README diff check from test matrix
