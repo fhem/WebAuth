@@ -40,4 +40,15 @@ cd "${RUN_ROOT}"
 PERL5LIB="${RUN_ROOT}/lib:${FHEM_PERL5LIB:-/usr/src/app/core/lib/perl5}${PERL5LIB:+:$PERL5LIB}"
 export PERL5LIB
 
-prove "${TEST_FILE}"
+prove_cmd=(prove)
+
+if [[ -n "${FHEM_PROVE_ARGS:-}" ]]; then
+  read -r -a prove_args <<<"${FHEM_PROVE_ARGS}"
+  prove_cmd+=("${prove_args[@]}")
+fi
+
+if [[ -n "${FHEM_PROVE_EXEC:-}" ]]; then
+  prove_cmd+=(--exec "${FHEM_PROVE_EXEC}")
+fi
+
+"${prove_cmd[@]}" "${TEST_FILE}"
