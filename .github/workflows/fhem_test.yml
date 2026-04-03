@@ -79,7 +79,7 @@ jobs:
       - name: Push generated files
         uses: ad-m/github-push-action@v1.0.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BOT_PUSH_TOKEN }}
           branch: ${{ steps.branch.outputs.name }}
 
   test:
