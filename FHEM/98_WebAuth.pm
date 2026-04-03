@@ -201,9 +201,7 @@ sub _SummarizeRelevantHeaders {
   foreach my $name (sort keys %wanted) {
     my $value = _HeaderValue($headers, $name);
     $value = '<absent>' if(!defined($value));
-    if(defined($value) && $name =~ m/^(?:authorization|cookie|set-cookie|x-client-cert-serial)$/i) {
-      $value = '<redacted>';
-    }
+    $value = _MaskSensitiveHeaderValue($name, $value);
     push @summary, "$name=$value";
   }
 
@@ -215,6 +213,21 @@ sub _SummarizeRelevantHeaders {
   }
 
   return @summary ? join(', ', @summary) : '<no-policy-headers>';
+}
+
+sub _MaskSensitiveHeaderValue {
+  my ($name, $value) = @_;
+
+  return $value if(!defined($value) || $value eq '<absent>');
+
+  return '<redacted>' if($name =~ m/^(?:authorization|cookie|set-cookie)$/i);
+
+  if($name =~ m/^x-client-cert-serial$/i) {
+    return '<redacted>' if(length($value) <= 4);
+    return ('*' x (length($value) - 4)) . substr($value, -4);
+  }
+
+  return $value;
 }
 
 sub _CollectPolicyHeaders {
