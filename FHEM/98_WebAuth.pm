@@ -99,43 +99,43 @@ sub Authenticate {
   };
 
   if($me->{disabled} && main::IsDisabled($aName)) {
-    main::Log3 $aName, 4, "$aName: skipping authentication for path=$path because device is disabled";
+    main::Log3 $aName, 5, "$aName: skipping authentication for path=$path because device is disabled";
     return 0;
   }
   if($cl->{TYPE} ne "FHEMWEB") {
-    main::Log3 $aName, 4, "$aName: skipping authentication for path=$path because client type is ".($cl->{TYPE} // '<undef>');
+    main::Log3 $aName, 5, "$aName: skipping authentication for path=$path because client type is ".($cl->{TYPE} // '<undef>');
     return 0;
   }
 
   my $vName = $cl->{SNAME} ? $cl->{SNAME} : $cl->{NAME};
   if(!$me->{".validFor"}{$vName}) {
-    main::Log3 $aName, 4, "$aName: skipping authentication for path=$path because frontend=$vName is not covered by validFor";
+    main::Log3 $aName, 5, "$aName: skipping authentication for path=$path because frontend=$vName is not covered by validFor";
     return 0;
   }
   if(!$me->{".headerAuthPolicy"}) {
-    main::Log3 $aName, 4, "$aName: skipping authentication for path=$path because no headerAuthPolicy is configured";
+    main::Log3 $aName, 5, "$aName: skipping authentication for path=$path because no headerAuthPolicy is configured";
     return 0;
   }
 
   if(!$param) {
-    main::Log3 $aName, 4, "$aName: denying path=$path because no request headers were provided";
+    main::Log3 $aName, 5, "$aName: denying path=$path because no request headers were provided";
     return &$doReturn(2);
   }
 
   my $exc = main::AttrVal($aName, "noCheckFor", undef);
   if($exc && $param->{_Path} =~ m/$exc/) {
-    main::Log3 $aName, 4, "$aName: bypassing authentication for path=$path due to noCheckFor";
+    main::Log3 $aName, 5, "$aName: bypassing authentication for path=$path due to noCheckFor";
     return 3;
   }
 
   my $trustedProxy = main::AttrVal($aName, "trustedProxy", undef);
   if($trustedProxy) {
     if(!defined($cl->{PEER}) || $cl->{PEER} !~ m/$trustedProxy/) {
-      main::Log3 $aName, 4,
+      main::Log3 $aName, 5,
         "$aName: proxy mismatch for path=$path peer=".(defined($cl->{PEER}) ? $cl->{PEER} : '<undef>')." trustedProxy=$trustedProxy";
       return &$doReturn(0);
     }
-    main::Log3 $aName, 4, "$aName: trusted proxy matched for path=$path peer=$cl->{PEER}";
+    main::Log3 $aName, 5, "$aName: trusted proxy matched for path=$path peer=$cl->{PEER}";
   }
 
   my %effectiveHeaders = %{$param};
@@ -148,21 +148,21 @@ sub Authenticate {
       if(defined($forwardedIp) && $forwardedIp ne '');
     $effectiveHeaders{"X-FHEM-Trusted-Proxy-IP"} = $clientIp
       if(defined($clientIp) && $clientIp ne '');
-    main::Log3 $aName, 4,
+    main::Log3 $aName, 5,
       "$aName: effective client context for path=$path peer=".(defined($clientIp) ? $clientIp : '<undef>').
       " forwarded=".(defined($forwardedIp) ? $forwardedIp : '<undef>');
   }
 
-  main::Log3 $aName, 4,
+  main::Log3 $aName, 5,
     "$aName: relevant headers for path=$path: "._SummarizeRelevantHeaders($me->{".headerAuthPolicy"}, \%effectiveHeaders);
 
   if(!_HasRelevantHeaders($me->{".headerAuthPolicy"}, \%effectiveHeaders)) {
     if(main::AttrVal($aName, "strict", 1)) {
-      main::Log3 $aName, 4, "$aName: denying path=$path because no relevant policy headers were present and strict=1";
+      main::Log3 $aName, 5, "$aName: denying path=$path because no relevant policy headers were present and strict=1";
       $cl->{".httpAuthHeader"} = "HTTP/1.1 403 Forbidden\r\n";
       return &$doReturn(2, "headerAuthPolicy");
     }
-    main::Log3 $aName, 4, "$aName: returning not-responsible for path=$path because no relevant policy headers were present and strict=0";
+    main::Log3 $aName, 5, "$aName: returning not-responsible for path=$path because no relevant policy headers were present and strict=0";
     return &$doReturn(0);
   }
   delete $cl->{".httpAuthHeader"};
@@ -173,17 +173,17 @@ sub Authenticate {
   );
   if($error) {
     main::Log3 $aName, 1, "$aName: headerAuthPolicy evaluation failed: $error";
-    main::Log3 $aName, 4, "$aName: denying path=$path because policy evaluation returned an error";
+    main::Log3 $aName, 5, "$aName: denying path=$path because policy evaluation returned an error";
     $cl->{".httpAuthHeader"} = "HTTP/1.1 403 Forbidden\r\n";
     return &$doReturn(2, "headerAuthPolicy");
   }
 
   if($ok) {
-    main::Log3 $aName, 4, "$aName: authentication succeeded for path=$path via headerAuthPolicy";
+    main::Log3 $aName, 5, "$aName: authentication succeeded for path=$path via headerAuthPolicy";
     return &$doReturn(1, "headerAuthPolicy");
   }
 
-  main::Log3 $aName, 4, "$aName: denying path=$path because relevant headers were present but headerAuthPolicy did not match";
+  main::Log3 $aName, 5, "$aName: denying path=$path because relevant headers were present but headerAuthPolicy did not match";
   $cl->{".httpAuthHeader"} = "HTTP/1.1 403 Forbidden\r\n";
   return &$doReturn(2, "headerAuthPolicy");
 }
