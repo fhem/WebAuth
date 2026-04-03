@@ -441,6 +441,10 @@ sub Attr {
     "OIDC",
     "Web"
   ],
+  "x_fhem_prereqs": [
+    "a configured FHEMWEB instance referenced by attr validFor",
+    "an upstream reverse proxy or authentication layer that injects trusted HTTP headers"
+  ],
   "x_lang": {
     "de": {
       "abstract": "authentifiziert FHEMWEB Requests anhand von HTTP Headern"
