@@ -1,3 +1,5 @@
+2026-04-03 - readme: generate module reference from pod and META.json
+
 2026-04-02 - Merge pull request #5 from fhem/codex/fix-controls-lib-path
 
 [codex] Fix controls update for authentication helper path
