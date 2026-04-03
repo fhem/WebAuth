@@ -1,2 +1,2 @@
-UPD 2026-04-03_12:51:50 13217 FHEM/98_WebAuth.pm
+UPD 2026-04-03_18:48:46 16499 FHEM/98_WebAuth.pm
 UPD 2026-03-29_23:56:53 4139 lib/FHEM/Core/Authentication/HeaderPolicy.pm

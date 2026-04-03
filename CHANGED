@@ -1,3 +1,5 @@
+2026-04-03 - WebAuth: move troubleshooting decision logs to verbose 5
+
 2026-04-03 - Merge pull request #7 from fhem/codex/readme-module-reference-from-pod-meta
 
 [codex] Generate README module reference from POD and META.json
