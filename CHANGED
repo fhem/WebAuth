@@ -1,3 +1,5 @@
+2026-04-03 - WebAuth: resolve trustedProxy hostnames via DNS
+
 2026-04-03 - Merge pull request #8 from fhem/codex/webauth-verbose4-auth-debug
 
 WebAuth: add verbose 4 troubleshooting logs for auth debugging

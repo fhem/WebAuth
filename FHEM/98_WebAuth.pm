@@ -12,6 +12,8 @@ package main;
 use strict;
 use warnings;
 
+use Socket ();
+
 use FHEM::Core::Authentication::HeaderPolicy qw(
   evaluate_header_auth_policy
   parse_header_auth_policy
@@ -130,12 +132,16 @@ sub Authenticate {
 
   my $trustedProxy = main::AttrVal($aName, "trustedProxy", undef);
   if($trustedProxy) {
-    if(!defined($cl->{PEER}) || $cl->{PEER} !~ m/$trustedProxy/) {
+    my ($trustedProxyMatched, $peerHostname) = _TrustedProxyMatches($cl->{PEER}, $trustedProxy);
+    if(!$trustedProxyMatched) {
       main::Log3 $aName, 5,
-        "$aName: proxy mismatch for path=$path peer=".(defined($cl->{PEER}) ? $cl->{PEER} : '<undef>')." trustedProxy=$trustedProxy";
+        "$aName: proxy mismatch for path=$path peer=".(defined($cl->{PEER}) ? $cl->{PEER} : '<undef>').
+        " peerHostname=".(defined($peerHostname) ? $peerHostname : '<undef>')." trustedProxy=$trustedProxy";
       return &$doReturn(0);
     }
-    main::Log3 $aName, 5, "$aName: trusted proxy matched for path=$path peer=$cl->{PEER}";
+    main::Log3 $aName, 5,
+      "$aName: trusted proxy matched for path=$path peer=$cl->{PEER}".
+      (defined($peerHostname) ? " peerHostname=$peerHostname" : '');
   }
 
   my %effectiveHeaders = %{$param};
@@ -301,6 +307,118 @@ sub _ExtractForwardedClientIP {
   return undef;
 }
 
+sub _TrustedProxyMatches {
+  my ($peer, $trustedProxy) = @_;
+
+  return (0, undef) if(!defined($peer) || $peer eq '' || !defined($trustedProxy) || $trustedProxy eq '');
+  return (1, undef) if($peer =~ m/$trustedProxy/);
+
+  my $peerHostname = _ResolvePeerHostname($peer);
+  return (1, $peerHostname) if(defined($peerHostname) && $peerHostname =~ m/$trustedProxy/);
+
+  my $normalizedPeer = _NormalizeIPAddress($peer);
+  foreach my $hostname (_LiteralTrustedProxyHostnames($trustedProxy)) {
+    foreach my $resolvedIp (_ResolveHostnameToIPs($hostname)) {
+      next if(!defined($resolvedIp));
+      return (1, $peerHostname) if(defined($normalizedPeer) && $normalizedPeer eq _NormalizeIPAddress($resolvedIp));
+    }
+  }
+
+  return (0, $peerHostname);
+}
+
+sub _ResolvePeerHostname {
+  my ($peer) = @_;
+
+  my ($family, $packedAddress) = _ParseIPAddress($peer);
+  return undef if(!defined($family) || !defined($packedAddress));
+
+  my $hostname = gethostbyaddr($packedAddress, $family);
+  return undef if(!defined($hostname) || $hostname eq '');
+
+  return lc($hostname);
+}
+
+sub _LiteralTrustedProxyHostnames {
+  my ($trustedProxy) = @_;
+
+  return () if(!defined($trustedProxy));
+
+  my $candidate = $trustedProxy;
+  $candidate =~ s/\A\^//;
+  $candidate =~ s/\$\z//;
+
+  return () if($candidate !~ m/\A(?:[A-Za-z0-9-]+\.)*[A-Za-z0-9-]+\z/);
+  return () if($candidate !~ m/[A-Za-z]/);
+
+  return (lc($candidate));
+}
+
+sub _ResolveHostnameToIPs {
+  my ($hostname) = @_;
+
+  return () if(!defined($hostname) || $hostname eq '');
+
+  my ($err, @results) = Socket::getaddrinfo($hostname, undef);
+  return () if($err);
+
+  my %seen;
+  my @ips;
+  foreach my $result (@results) {
+    next if(ref($result) ne 'HASH');
+    my $ip = _SocketAddressToIP($result->{family}, $result->{addr});
+    next if(!defined($ip) || $seen{$ip}++);
+    push @ips, $ip;
+  }
+
+  return @ips;
+}
+
+sub _SocketAddressToIP {
+  my ($family, $socketAddress) = @_;
+
+  return undef if(!defined($family) || !defined($socketAddress));
+
+  if($family == Socket::AF_INET()) {
+    my (undef, $packedAddress) = Socket::unpack_sockaddr_in($socketAddress);
+    return Socket::inet_ntop(Socket::AF_INET(), $packedAddress);
+  }
+
+  if($family == Socket::AF_INET6()) {
+    my (undef, $packedAddress) = Socket::unpack_sockaddr_in6($socketAddress);
+    return Socket::inet_ntop(Socket::AF_INET6(), $packedAddress);
+  }
+
+  return undef;
+}
+
+sub _ParseIPAddress {
+  my ($ip) = @_;
+
+  my $normalizedIp = _NormalizeIPAddress($ip);
+  return (undef, undef) if(!defined($normalizedIp));
+
+  my $packedIPv4 = Socket::inet_pton(Socket::AF_INET(), $normalizedIp);
+  return (Socket::AF_INET(), $packedIPv4) if(defined($packedIPv4));
+
+  my $packedIPv6 = Socket::inet_pton(Socket::AF_INET6(), $normalizedIp);
+  return (Socket::AF_INET6(), $packedIPv6) if(defined($packedIPv6));
+
+  return (undef, undef);
+}
+
+sub _NormalizeIPAddress {
+  my ($ip) = @_;
+
+  return undef if(!defined($ip) || $ip eq '');
+
+  $ip =~ s/^\[//;
+  $ip =~ s/\]$//;
+  $ip =~ s/%[A-Za-z0-9_.-]+\z//;
+
+  return lc($ip);
+}
+
 sub _HeaderValue {
   my ($headers, $wanted) = @_;
 
@@ -463,6 +581,13 @@ sub Attr {
     <li>trustedProxy<br>
         Regexp of trusted reverse-proxy IP addresses or hostnames.<br>
         The check uses the socket peer address of the TCP connection.
+        If the regexp does not match the peer IP directly, WebAuth also tries
+        the reverse-resolved hostname of the peer. For literal hostname
+        patterns like <code>proxy.example.org</code> or
+        <code>^proxy.example.org$</code>, WebAuth additionally resolves the
+        configured hostname via DNS and compares the resulting IP addresses
+        with the socket peer.<br><br>
+
         If the peer does not match, WebAuth does not handle the request and
         lets another authenticator, for example <code>allowed</code> with
         <code>basicAuth</code>, try next.<br><br>

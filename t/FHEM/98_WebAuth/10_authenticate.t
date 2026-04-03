@@ -121,6 +121,26 @@ subtest 'noCheckFor still bypasses header auth' => sub {
   is(fhem('deleteattr webAuthWEB noCheckFor'), U(), 'noCheckFor removed again');
 };
 
+subtest 'trustedProxy accepts literal hostname via DNS resolution' => sub {
+  is(fhem('attr webAuthWEB trustedProxy localhost'), U(), 'trustedProxy hostname configured');
+
+  my $client = make_client(
+    PEER => '127.0.0.1',
+  );
+  my %headers = (
+    _Path => '/fhem',
+    'X-Forwarded-User' => 'demo-user',
+    'X-Auth-Source' => 'oauth2-proxy',
+  );
+
+  my $ret = Authenticate($client, \%headers);
+
+  is($ret, 1, 'literal trustedProxy hostname resolves to peer IP');
+  is($client->{AuthenticatedBy}, 'webAuthWEB', 'WebAuth authenticated the request via hostname-based trustedProxy');
+
+  is(fhem('deleteattr webAuthWEB trustedProxy'), U(), 'trustedProxy removed again');
+};
+
 todo 'known follow-up auth handling regression with the current patch' => sub {
   subtest 'strict re-checks unauthenticated keep-alive follow-up requests' => sub {
     is(fhem('attr webAuthWEB strict 0'), U(), 'strict disabled for initial request');
