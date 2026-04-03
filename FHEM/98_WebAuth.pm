@@ -124,14 +124,13 @@ sub Authenticate {
     return &$doReturn(2);
   }
 
-  my $exc = $me->{".noCheckFor"};
+  my ($excRaw, $exc) = _GetStoredRegex($me, $aName, "noCheckFor");
   if($exc && $param->{_Path} =~ $exc) {
     main::Log3 $aName, 5, "$aName: bypassing authentication for path=$path due to noCheckFor";
     return 3;
   }
 
-  my $trustedProxy = $me->{".trustedProxy"};
-  my $trustedProxyRe = $me->{".trustedProxyRe"};
+  my ($trustedProxy, $trustedProxyRe) = _GetStoredRegex($me, $aName, "trustedProxy");
   if($trustedProxy) {
     my ($trustedProxyMatched, $peerHostname) = _TrustedProxyMatches($cl->{PEER}, $trustedProxyRe, $trustedProxy);
     if(!$trustedProxyMatched) {
@@ -442,6 +441,31 @@ sub _CompileRegex {
   return undef if($@);
 
   return $compiled;
+}
+
+sub _GetStoredRegex {
+  my ($hash, $devName, $attrName) = @_;
+
+  return (undef, undef) if(ref($hash) ne 'HASH' || !defined($attrName));
+
+  my $raw = $hash->{".$attrName"};
+  if(!defined($raw) && defined($devName)) {
+    $raw = main::AttrVal($devName, $attrName, undef);
+    $hash->{".$attrName"} = $raw if(defined($raw));
+  }
+
+  return (undef, undef) if(!defined($raw) || $raw eq '');
+
+  my $compiled = $hash->{".$attrName"."Re"};
+  if(!defined($compiled)) {
+    $compiled = _CompileRegex($raw);
+    if(defined($compiled)) {
+      $hash->{".$attrName"."Re"} = $compiled;
+      main::Log3 $devName, 5, "$devName: lazily compiled $attrName regex from stored attribute value";
+    }
+  }
+
+  return ($raw, $compiled);
 }
 
 sub Attr {

@@ -145,6 +145,30 @@ subtest 'trustedProxy accepts literal hostname via DNS resolution' => sub {
   is($defs{webAuthWEB}{'.trustedProxyRe'}, U(), 'compiled trustedProxy regex is removed again');
 };
 
+subtest 'stored trustedProxy is compiled lazily after reload-style state loss' => sub {
+  is(fhem('attr webAuthWEB trustedProxy ^localhost$'), U(), 'trustedProxy hostname regex configured');
+  is(ref($defs{webAuthWEB}{'.trustedProxyRe'}), 'Regexp', 'trustedProxy regex starts precompiled');
+
+  delete $defs{webAuthWEB}{'.trustedProxyRe'};
+  is($defs{webAuthWEB}{'.trustedProxyRe'}, U(), 'compiled trustedProxy regex removed to simulate reload gap');
+
+  my $client = make_client(
+    PEER => '127.0.0.1',
+  );
+  my %headers = (
+    _Path => '/fhem',
+    'X-Forwarded-User' => 'demo-user',
+    'X-Auth-Source' => 'oauth2-proxy',
+  );
+
+  my $ret = Authenticate($client, \%headers);
+
+  is($ret, 1, 'trustedProxy still matches after lazy compilation');
+  is(ref($defs{webAuthWEB}{'.trustedProxyRe'}), 'Regexp', 'compiled trustedProxy regex is restored lazily');
+
+  is(fhem('deleteattr webAuthWEB trustedProxy'), U(), 'trustedProxy removed again');
+};
+
 todo 'known follow-up auth handling regression with the current patch' => sub {
   subtest 'strict re-checks unauthenticated keep-alive follow-up requests' => sub {
     is(fhem('attr webAuthWEB strict 0'), U(), 'strict disabled for initial request');
