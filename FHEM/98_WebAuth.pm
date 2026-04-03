@@ -124,15 +124,16 @@ sub Authenticate {
     return &$doReturn(2);
   }
 
-  my $exc = main::AttrVal($aName, "noCheckFor", undef);
-  if($exc && $param->{_Path} =~ m/$exc/) {
+  my $exc = $me->{".noCheckFor"};
+  if($exc && $param->{_Path} =~ $exc) {
     main::Log3 $aName, 5, "$aName: bypassing authentication for path=$path due to noCheckFor";
     return 3;
   }
 
-  my $trustedProxy = main::AttrVal($aName, "trustedProxy", undef);
+  my $trustedProxy = $me->{".trustedProxy"};
+  my $trustedProxyRe = $me->{".trustedProxyRe"};
   if($trustedProxy) {
-    my ($trustedProxyMatched, $peerHostname) = _TrustedProxyMatches($cl->{PEER}, $trustedProxy);
+    my ($trustedProxyMatched, $peerHostname) = _TrustedProxyMatches($cl->{PEER}, $trustedProxyRe, $trustedProxy);
     if(!$trustedProxyMatched) {
       main::Log3 $aName, 5,
         "$aName: proxy mismatch for path=$path peer=".(defined($cl->{PEER}) ? $cl->{PEER} : '<undef>').
@@ -308,13 +309,13 @@ sub _ExtractForwardedClientIP {
 }
 
 sub _TrustedProxyMatches {
-  my ($peer, $trustedProxy) = @_;
+  my ($peer, $trustedProxyRe, $trustedProxy) = @_;
 
-  return (0, undef) if(!defined($peer) || $peer eq '' || !defined($trustedProxy) || $trustedProxy eq '');
-  return (1, undef) if($peer =~ m/$trustedProxy/);
+  return (0, undef) if(!defined($peer) || $peer eq '' || !defined($trustedProxyRe) || !defined($trustedProxy) || $trustedProxy eq '');
+  return (1, undef) if($peer =~ $trustedProxyRe);
 
   my $peerHostname = _ResolvePeerHostname($peer);
-  return (1, $peerHostname) if(defined($peerHostname) && $peerHostname =~ m/$trustedProxy/);
+  return (1, $peerHostname) if(defined($peerHostname) && $peerHostname =~ $trustedProxyRe);
 
   my $normalizedPeer = _NormalizeIPAddress($peer);
   foreach my $hostname (_LiteralTrustedProxyHostnames($trustedProxy)) {
@@ -432,6 +433,16 @@ sub _HeaderValue {
   return undef;
 }
 
+sub _CompileRegex {
+  my ($raw) = @_;
+
+  return undef if(!defined($raw));
+
+  my $compiled = eval { qr/$raw/ };
+  return undef if($@);
+
+  return $compiled;
+}
 
 sub Attr {
   my ($type, $devName, $attrName, @param) = @_;
@@ -451,6 +462,7 @@ sub Attr {
     }
 
   } elsif($attrName eq "headerAuthPolicy" ||
+          $attrName eq "noCheckFor" ||
           $attrName eq "trustedProxy" ||
           $attrName eq "validFor") {
     if($set) {
@@ -470,14 +482,16 @@ sub Attr {
 
           $hash->{".$attrName"} = $policy;
         } else {
-          my $regexOk = eval { '' =~ m/$raw/; 1 };
-          return "trustedProxy must be a valid Perl regular expression"
-            if(!$regexOk);
+          my $compiled = _CompileRegex($raw);
+          return "$attrName must be a valid Perl regular expression"
+            if(!defined($compiled));
           $hash->{".$attrName"} = $raw;
+          $hash->{".$attrName"."Re"} = $compiled;
         }
       }
     } else {
       delete($hash->{".$attrName"});
+      delete($hash->{".$attrName"."Re"}) if($attrName eq "noCheckFor" || $attrName eq "trustedProxy");
     }
 
     if($attrName eq "validFor") {

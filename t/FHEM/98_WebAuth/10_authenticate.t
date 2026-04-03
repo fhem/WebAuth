@@ -109,6 +109,7 @@ subtest 'non-matching header policy denies access without basic challenge' => su
 
 subtest 'noCheckFor still bypasses header auth' => sub {
   is(fhem('attr webAuthWEB noCheckFor ^/fhem/icons/favicon$'), U(), 'noCheckFor configured');
+  is(ref($defs{webAuthWEB}{'.noCheckForRe'}), 'Regexp', 'noCheckFor regex is precompiled on the device hash');
 
   my $client = make_client();
   my %headers = (_Path => '/fhem/icons/favicon');
@@ -119,10 +120,12 @@ subtest 'noCheckFor still bypasses header auth' => sub {
   is($client->{'.httpAuthHeader'}, U(), 'no auth header is generated for bypass');
 
   is(fhem('deleteattr webAuthWEB noCheckFor'), U(), 'noCheckFor removed again');
+  is($defs{webAuthWEB}{'.noCheckForRe'}, U(), 'compiled noCheckFor regex is removed again');
 };
 
 subtest 'trustedProxy accepts literal hostname via DNS resolution' => sub {
   is(fhem('attr webAuthWEB trustedProxy localhost'), U(), 'trustedProxy hostname configured');
+  is(ref($defs{webAuthWEB}{'.trustedProxyRe'}), 'Regexp', 'trustedProxy regex is precompiled on the device hash');
 
   my $client = make_client(
     PEER => '127.0.0.1',
@@ -139,6 +142,7 @@ subtest 'trustedProxy accepts literal hostname via DNS resolution' => sub {
   is($client->{AuthenticatedBy}, 'webAuthWEB', 'WebAuth authenticated the request via hostname-based trustedProxy');
 
   is(fhem('deleteattr webAuthWEB trustedProxy'), U(), 'trustedProxy removed again');
+  is($defs{webAuthWEB}{'.trustedProxyRe'}, U(), 'compiled trustedProxy regex is removed again');
 };
 
 todo 'known follow-up auth handling regression with the current patch' => sub {
