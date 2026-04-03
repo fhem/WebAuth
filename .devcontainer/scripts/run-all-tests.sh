@@ -29,4 +29,15 @@ if [[ ${#tests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-prove "${tests[@]}"
+prove_cmd=(prove)
+
+if [[ -n "${FHEM_PROVE_ARGS:-}" ]]; then
+  read -r -a prove_args <<<"${FHEM_PROVE_ARGS}"
+  prove_cmd+=("${prove_args[@]}")
+fi
+
+if [[ -n "${FHEM_PROVE_EXEC:-}" ]]; then
+  prove_cmd+=(--exec "${FHEM_PROVE_EXEC}")
+fi
+
+"${prove_cmd[@]}" "${tests[@]}"

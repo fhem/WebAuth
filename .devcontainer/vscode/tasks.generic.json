@@ -1,0 +1,128 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "test: integration (picked)",
+      "type": "shell",
+      "command": "prove ${input:proveOptions} -r --exec '${input:integrationExec}' ${input:pickedIntegrationTests}",
+      "problemMatcher": {
+        "owner": "TAP",
+        "fileLocation": "relative",
+        "pattern": [
+          {
+            "regexp": "^#\\s+(Failed test '.*')",
+            "message": 1
+          },
+          {
+            "regexp": "^#\\s+at (.*) line (\\d+)",
+            "line": 2,
+            "file": 1
+          }
+        ]
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "test: perl (picked)",
+      "type": "shell",
+      "command": "prove ${input:proveOptions} -r --exec '${input:perlExec}' ${input:pickedPerlTests}",
+      "problemMatcher": {
+        "owner": "TAP",
+        "fileLocation": "relative",
+        "pattern": [
+          {
+            "regexp": "^#\\s+(Failed test '.*')",
+            "message": 1
+          },
+          {
+            "regexp": "^#\\s+at (.*) line (\\d+)",
+            "line": 2,
+            "file": 1
+          }
+        ]
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "test: integration (active file)",
+      "type": "shell",
+      "command": "prove ${input:proveOptions} -r --exec '${input:integrationExec}' ${file}",
+      "problemMatcher": {
+        "owner": "TAP",
+        "fileLocation": "relative",
+        "pattern": [
+          {
+            "regexp": "^#\\s+(Failed test '.*')",
+            "message": 1
+          },
+          {
+            "regexp": "^#\\s+at (.*) line (\\d+)",
+            "line": 2,
+            "file": 1
+          }
+        ]
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "test: perl (active file)",
+      "type": "shell",
+      "command": "prove ${input:proveOptions} -r --exec '${input:perlExec}' ${file}",
+      "problemMatcher": {
+        "owner": "TAP",
+        "fileLocation": "relative",
+        "pattern": [
+          {
+            "regexp": "^#\\s+(Failed test '.*')",
+            "message": 1
+          },
+          {
+            "regexp": "^#\\s+at (.*) line (\\d+)",
+            "line": 2,
+            "file": 1
+          }
+        ]
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "proveOptions",
+      "type": "promptString",
+      "description": "z.B. -v -j4 -m"
+    },
+    {
+      "id": "integrationExec",
+      "type": "promptString",
+      "default": "perl fhem.pl -t"
+    },
+    {
+      "id": "perlExec",
+      "type": "promptString",
+      "default": "perl -I lib -I FHEM"
+    },
+    {
+      "id": "pickedIntegrationTests",
+      "type": "promptString",
+      "description": "z.B. t/FHEM/01_FHEMWEB t/FHEM/98_WebAuth"
+    },
+    {
+      "id": "pickedPerlTests",
+      "type": "promptString",
+      "description": "z.B. t/FHEM/Core/Authentication/**/*.t"
+    }
+  ]
+}

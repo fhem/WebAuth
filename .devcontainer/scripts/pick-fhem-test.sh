@@ -3,7 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODULE_REPO_ROOT="${MODULE_REPO_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
-FHEM_TOOLKIT_ROOT="${FHEM_TOOLKIT_ROOT:-$(cd "${MODULE_REPO_ROOT}/.." && pwd)/fhem-devcontainer-toolkit}"
 
 if [[ -d "${MODULE_REPO_ROOT}/t" ]]; then
   : "${FHEM_TEST_ROOT:=${MODULE_REPO_ROOT}/t}"
@@ -22,4 +21,35 @@ fi
 
 export FHEM_RUN_ROOT="${RUN_ROOT}"
 
-exec "${FHEM_TOOLKIT_ROOT}/base/scripts/pick-fhem-test.sh"
+cd "${FHEM_TEST_ROOT}"
+PERL5LIB="${FHEM_RUN_ROOT}/lib:${FHEM_PERL5LIB:-/usr/src/app/core/lib/perl5}${PERL5LIB:+:$PERL5LIB}"
+export PERL5LIB
+
+mapfile -t tests < <(find . -name '*.t' | sort)
+if [[ ${#tests[@]} -eq 0 ]]; then
+  echo "No .t tests found under $(pwd)" >&2
+  exit 1
+fi
+
+PS3="Select a test to run: "
+select test in "${tests[@]}"; do
+  if [[ -z "${test:-}" ]]; then
+    echo "Invalid selection" >&2
+    continue
+  fi
+
+  test_path="${FHEM_TEST_ROOT}/${test#./}"
+  prove_cmd=(prove)
+
+  case "${test}" in
+    ./FHEM/Core/Authentication/*)
+      prove_cmd+=(-I lib -r -vv)
+      ;;
+    *)
+      prove_cmd+=(-I FHEM -r -vv --exec "perl fhem.pl -t")
+      ;;
+  esac
+
+  cd "${FHEM_RUN_ROOT}"
+  exec "${prove_cmd[@]}" "${test_path}"
+done

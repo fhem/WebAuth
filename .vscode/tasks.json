@@ -5,7 +5,7 @@
       "id": "testFile",
       "type": "promptString",
       "description": "Path to the .t test file, relative to the repo test root",
-      "default": "path/to/test.t"
+      "default": "FHEM/98_WebAuth/10_authenticate.t"
     }
   ],
   "tasks": [
@@ -35,6 +35,91 @@
       ],
       "options": {
         "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "WebAuth: run active helper test file",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-single-test.sh",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "WebAuth: run active integration test file",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-single-test.sh",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "FHEM_PROVE_ARGS": "-I FHEM -r -vv",
+          "FHEM_PROVE_EXEC": "perl fhem.pl -t"
+        }
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "WebAuth: run helper module tests",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-all-tests.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "FHEM_PROVE_ARGS": "-I lib -r -vv",
+          "FHEM_TEST_ROOT": "${workspaceFolder}/t/FHEM/Core/Authentication"
+        }
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "WebAuth: run FHEMWEB integration tests",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-all-tests.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "FHEM_PROVE_ARGS": "-I FHEM -r -vv",
+          "FHEM_PROVE_EXEC": "perl fhem.pl -t",
+          "FHEM_TEST_ROOT": "${workspaceFolder}/t/FHEM/01_FHEMWEB"
+        }
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "WebAuth: run WebAuth integration tests",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/scripts/run-all-tests.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "FHEM_PROVE_ARGS": "-I FHEM -r -vv",
+          "FHEM_PROVE_EXEC": "perl fhem.pl -t",
+          "FHEM_TEST_ROOT": "${workspaceFolder}/t/FHEM/98_WebAuth"
+        }
       },
       "group": "test",
       "problemMatcher": []
