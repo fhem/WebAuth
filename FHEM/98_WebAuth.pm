@@ -201,7 +201,7 @@ sub _SummarizeRelevantHeaders {
   foreach my $name (sort keys %wanted) {
     my $value = _HeaderValue($headers, $name);
     $value = '<absent>' if(!defined($value));
-    if(defined($value) && $name =~ m/^(?:authorization|cookie|set-cookie)$/i) {
+    if(defined($value) && $name =~ m/^(?:authorization|cookie|set-cookie|x-client-cert-serial)$/i) {
       $value = '<redacted>';
     }
     push @summary, "$name=$value";
