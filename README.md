@@ -11,7 +11,7 @@ Generated from [`FHEM/98_WebAuth.pm`](/home/runner/work/WebAuth/WebAuth/FHEM/98_
 
 - Summary: authenticate FHEMWEB requests based on HTTP headers
 - Zusammenfassung: authentifiziert FHEMWEB Anfragen anhand von HTTP Headern
-- Version: 0.2.0
+- Version: 0.3.0
 - Author: Sidey
 - Keywords: Authentication, Authorization, Header, Reverse Proxy, Trusted Proxy, Forward Auth, SSO, OIDC, Web
 
@@ -46,7 +46,7 @@ Authenticate FHEMWEB requests based on HTTP headers, typically injected by a tru
   ]
 }
 ```
-- `trustedProxy`: Regexp of trusted reverse-proxy IP addresses or hostnames. The check uses the socket peer address of the TCP connection. If the peer does not match, WebAuth does not handle the request and lets another authenticator, for example `allowed` with `basicAuth`, try next. When the peer matches, WebAuth additionally makes the peer IP and a client IP derived from `Forwarded` or `X-Forwarded-For` available to `headerAuthPolicy` via synthetic internal headers. Example:
+- `trustedProxy`: Regexp of trusted reverse-proxy IP addresses or hostnames. The check uses the socket peer address of the TCP connection. If the regexp does not match the peer IP directly, WebAuth also tries the reverse-resolved hostname of the peer. For literal hostname patterns like `proxy.example.org` or `^proxy.example.org$`, WebAuth additionally resolves the configured hostname via DNS and compares the resulting IP addresses with the socket peer. If the peer does not match, WebAuth does not handle the request and lets another authenticator, for example `allowed` with `basicAuth`, try next. When the peer matches, WebAuth additionally makes the peer IP and a client IP derived from `Forwarded` or `X-Forwarded-For` available to `headerAuthPolicy` via synthetic internal headers. Example:
 
 ```json
 {
@@ -114,6 +114,6 @@ per branch. To add this branch as an update source in FHEM, use:
 
 <!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
 ```text
-update add https://raw.githubusercontent.com/fhem/WebAuth/main/controls_WebAuth.txt
+update add https://raw.githubusercontent.com/fhem/WebAuth/codex/trusted-proxy-dns/controls_WebAuth.txt
 ```
 <!-- END GENERATED FHEM UPDATE COMMAND -->

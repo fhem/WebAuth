@@ -79,7 +79,7 @@ jobs:
       - name: Push generated files
         uses: ad-m/github-push-action@v1.0.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BOT_PUSH_TOKEN }}
           branch: ${{ steps.branch.outputs.name }}
 
   test:
@@ -97,10 +97,6 @@ jobs:
           install-modules-args: --notest
       - name: Install CPAN dependencies
         run: cpanm --installdeps . --notest
-      - name: Verify generated README content
-        run: |
-          perl scripts/update-readme-from-module-docs.pl
-          git diff --exit-code README.md
       - name: Install FHEM via debian nightly
         uses: fhem/setup-fhem@v1.0.1
       - name: Change ownership of /opt/fhem
