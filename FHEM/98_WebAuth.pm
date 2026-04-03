@@ -5,7 +5,7 @@
 # authenticate FHEMWEB requests based on HTTP headers
 #
 # Author: Sidey
-# Version: 0.2.0
+# Version: 0.3.0
 #
 package main;
 
@@ -20,7 +20,7 @@ use FHEM::Core::Authentication::HeaderPolicy qw(
   validate_header_auth_policy
 );
 
-our $VERSION = '0.2.0';
+our $VERSION = '0.3.0';
 
 #####################################
 sub WebAuth_Initialize {
@@ -707,7 +707,7 @@ sub Attr {
       "abstract": "authentifiziert FHEMWEB Requests anhand von HTTP Headern"
     }
   },
-  "x_version": "0.2.0"
+  "x_version": "0.3.0"
 }
 =end :application/json;q=META.json
 
