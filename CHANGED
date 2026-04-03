@@ -1,3 +1,7 @@
+2026-04-03 - Merge pull request #7 from fhem/codex/readme-module-reference-from-pod-meta
+
+[codex] Generate README module reference from POD and META.json
+
 2026-04-03 - readme: generate module reference from pod and META.json
 
 2026-04-02 - Merge pull request #5 from fhem/codex/fix-controls-lib-path
