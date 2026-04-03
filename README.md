@@ -11,7 +11,7 @@ Generated from [`FHEM/98_WebAuth.pm`](/home/runner/work/WebAuth/WebAuth/FHEM/98_
 
 - Summary: authenticate FHEMWEB requests based on HTTP headers
 - Zusammenfassung: authentifiziert FHEMWEB Anfragen anhand von HTTP Headern
-- Version: 0.2.0
+- Version: 0.3.0
 - Author: Sidey
 - Keywords: Authentication, Authorization, Header, Reverse Proxy, Trusted Proxy, Forward Auth, SSO, OIDC, Web
 
