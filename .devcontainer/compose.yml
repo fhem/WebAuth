@@ -1,5 +1,4 @@
 # Managed by FHEM Devcontainer Toolkit.
-name: webauth-dev-env
 
 services:
   fhem-dev:
@@ -11,7 +10,6 @@ services:
         LOCAL_GID: ${LOCAL_GID:-1000}
         LOCAL_USER: ${LOCAL_USER:-dev}
     image: webauth-dev-local:bookworm
-    container_name: webauth-dev
     init: true
     entrypoint: []
     working_dir: /workspace/WebAuth

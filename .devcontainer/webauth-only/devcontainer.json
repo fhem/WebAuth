@@ -2,6 +2,7 @@
   "name": "FHEM Dev (WebAuth Only)",
   "dockerComposeFile": [
     "../compose.yml",
+    "../compose.local.yml",
     "../compose.webauth-proxy.yml",
     "../compose.addon-svn.yml",
     "compose.override.yml"
