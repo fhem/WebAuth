@@ -7,7 +7,7 @@ headers. The repository is module-centric and consumes the shared
 <!-- BEGIN GENERATED MODULE REFERENCE -->
 ## Module Reference
 
-Generated from [`FHEM/98_WebAuth.pm`](/workspace/WebAuth/FHEM/98_WebAuth.pm).
+Generated from [`FHEM/98_WebAuth.pm`](/home/runner/work/WebAuth/WebAuth/FHEM/98_WebAuth.pm).
 
 - Summary: authenticate FHEMWEB requests based on HTTP headers
 - Zusammenfassung: authentifiziert FHEMWEB Anfragen anhand von HTTP Headern
@@ -114,6 +114,6 @@ per branch. To add this branch as an update source in FHEM, use:
 
 <!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
 ```text
-update add https://raw.githubusercontent.com/fhem/WebAuth/main/controls_WebAuth.txt
+update add https://raw.githubusercontent.com/fhem/WebAuth/codex/readme-module-reference-from-pod-meta/controls_WebAuth.txt
 ```
 <!-- END GENERATED FHEM UPDATE COMMAND -->
