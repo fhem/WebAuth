@@ -1,3 +1,5 @@
+2026-04-03 - workflow: remove README diff check from test matrix
+
 2026-04-03 - WebAuth: bump version to 0.3.0
 
 2026-04-03 - WebAuth: lazily restore compiled attribute regexes
