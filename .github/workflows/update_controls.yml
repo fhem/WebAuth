@@ -5,6 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: write
   contents: read
 
 on:
@@ -78,3 +79,16 @@ jobs:
           echo "::add-mask::$BOT_PUSH_TOKEN"
           git remote set-url origin "https://x-access-token:${BOT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push origin "HEAD:${BRANCH_NAME}"
+      - name: Trigger tests for generated branch head
+        if: steps.commit_generated.outputs.created == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'fhem_test.yml',
+              ref: process.env.BRANCH_NAME,
+            });
+        env:
+          BRANCH_NAME: ${{ steps.branch.outputs.name }}
