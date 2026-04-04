@@ -1,0 +1,94 @@
+name: Update Generated Files
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  contents: read
+
+on:
+  push:
+    paths:
+      - 'FHEM/**'
+      - 'lib/**'
+      - 'README.md'
+      - 'scripts/**'
+  workflow_dispatch:
+
+jobs:
+  update_controls:
+    if: github.event_name != 'push' || github.event.head_commit.message != 'Automatic update of controls and CHANGED'
+    env:
+      CONTROLS_FILENAME: controls_${{ github.event.repository.name }}.txt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        id: branch
+        run: echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Update controls file
+        uses: fhem/fhem-controls-actions@v3.0.1
+        with:
+          filename: ${{ env.CONTROLS_FILENAME }}
+      - name: Add authentication helper entries to controls file
+        uses: fhem/fhem-controls-actions@v3.0.1
+        with:
+          filename: ${{ env.CONTROLS_FILENAME }}
+          directory: lib/FHEM/Core/Authentication
+          extension: .pm
+          writemode: a
+      - name: Update README branch-specific update command
+        env:
+          CONTROLS_URL: https://raw.githubusercontent.com/${{ github.repository }}/${{ steps.branch.outputs.name }}/${{ env.CONTROLS_FILENAME }}
+        run: |
+          perl -0pi -e 's{(<!-- BEGIN GENERATED FHEM UPDATE URL: one-shot -->\n```text\nupdate all )\S+(\n```\n<!-- END GENERATED FHEM UPDATE URL: one-shot -->)}{$1$ENV{CONTROLS_URL}$2}s; s{(<!-- BEGIN GENERATED FHEM UPDATE URL: persistent -->\n```text\nupdate add )\S+(\n```\n<!-- END GENERATED FHEM UPDATE URL: persistent -->)}{$1$ENV{CONTROLS_URL}$2}s' README.md
+      - name: Regenerate README module reference
+        run: perl scripts/update-readme-from-module-docs.pl
+      - name: Update CHANGED
+        run: |
+          log="$(date +'%Y-%m-%d') - $(git log -1 --pretty=%B)"
+          {
+            printf '%s\n\n' "$log"
+            cat CHANGED 2>/dev/null || true
+          } > CHANGED.new
+          mv CHANGED.new CHANGED
+      - name: Commit generated files
+        id: commit_generated
+        run: |
+          git config --local user.email action@github.com
+          git config --local user.name 'GitHub Action'
+          git add CHANGED README.md "${CONTROLS_FILENAME}" || true
+          if ! git diff --cached --quiet; then
+            git commit -m 'Automatic update of controls and CHANGED'
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Push generated files
+        if: steps.commit_generated.outputs.created == 'true'
+        env:
+          BOT_PUSH_TOKEN: ${{ secrets.BOT_PUSH_TOKEN }}
+          BRANCH_NAME: ${{ steps.branch.outputs.name }}
+        run: |
+          echo "::add-mask::$BOT_PUSH_TOKEN"
+          git remote set-url origin "https://x-access-token:${BOT_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin "HEAD:${BRANCH_NAME}"
+      - name: Trigger tests for generated branch head
+        if: steps.commit_generated.outputs.created == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'fhem_test.yml',
+              ref: process.env.BRANCH_NAME,
+            });
+        env:
+          BRANCH_NAME: ${{ steps.branch.outputs.name }}

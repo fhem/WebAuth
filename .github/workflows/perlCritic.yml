@@ -1,5 +1,9 @@
 name: Perlcritic check
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -8,6 +12,7 @@ on:
       - 'lib/**'
       - '.perlcritic'
       - '.github/workflows/perlCritic.yml'
+  workflow_dispatch:
 
 jobs:
   critic:
@@ -17,7 +22,7 @@ jobs:
         uses: actions/checkout@v6
       - uses: shogo82148/actions-setup-perl@v1.38.1
         with:
-          perl-version: '5.32'
+          perl-version: '5.38'
           install-modules-with: cpanm
           install-modules: Perl::Critic Task::PerlCriticAllPolicies
           install-modules-args: --notest

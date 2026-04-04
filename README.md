@@ -107,13 +107,29 @@ Perl dependencies are split into two layers:
 The task `FHEM: Sync Module -> SVN` syncs only the paths listed in
 `.devcontainer/svn-manifest.txt`.
 
-## FHEM Update
+
+## Installation
 
 The GitHub workflow generates [`controls_WebAuth.txt`](/workspace/WebAuth/controls_WebAuth.txt)
-per branch. To add this branch as an update source in FHEM, use:
+per branch.
 
-<!-- BEGIN GENERATED FHEM UPDATE COMMAND -->
+<!-- trigger update_controls -->
+### One-shot Installation (no persistent update source)
+
+Installs the module module without registering the update source in FHEM:
+
+<!-- BEGIN GENERATED FHEM UPDATE URL: one-shot -->
 ```text
-update add https://raw.githubusercontent.com/fhem/WebAuth/main/controls_WebAuth.txt
+update all https://raw.githubusercontent.com/fhem/WebAuth/feat/InstallDocs/controls_WebAuth.txt
 ```
-<!-- END GENERATED FHEM UPDATE COMMAND -->
+<!-- END GENERATED FHEM UPDATE URL: one-shot -->
+
+### Persistent Installation
+
+To add this branch as an persistent update source in FHEM, use:
+
+<!-- BEGIN GENERATED FHEM UPDATE URL: persistent -->
+```text
+update add https://raw.githubusercontent.com/fhem/WebAuth/feat/InstallDocs/controls_WebAuth.txt
+```
+<!-- END GENERATED FHEM UPDATE URL: persistent -->
