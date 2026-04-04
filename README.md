@@ -113,6 +113,7 @@ The task `FHEM: Sync Module -> SVN` syncs only the paths listed in
 The GitHub workflow generates [`controls_WebAuth.txt`](/workspace/WebAuth/controls_WebAuth.txt)
 per branch.
 
+<!-- trigger update_controls -->
 ### One-shot Installation (no persistent update source)
 
 Installs the module module without registering the update source in FHEM:
