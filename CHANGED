@@ -1,3 +1,7 @@
+2026-04-04 - workflow: stabilize generated branch updates
+
+2026-04-04 - docs: add FHEM installation instructions
+
 2026-04-03 - Merge pull request #10 from fhem/codex/trusted-proxy-dns
 
 [codex] Resolve trustedProxy hostnames via DNS
