@@ -43,7 +43,7 @@ jobs:
       - name: Install CPAN dependencies
         run: cpanm --installdeps . --notest
       - name: Install FHEM via debian nightly
-        uses: fhem/setup-fhem@v1.0.1
+        uses: fhem/setup-fhem@v1.0.2
       - name: Change ownership of /opt/fhem
         run: sudo chown -R --reference=cpanfile /opt/fhem
       - name: Run helper module tests
