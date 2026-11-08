@@ -4,18 +4,9 @@ permissions:
   contents: read
 
 on:
+  # Kein paths-Filter bei pull_request: Required Status Checks müssen auf jedem PR
+  # gemeldet werden, sonst bleiben reine Renovate-/Doku-PRs auf BLOCKED stehen.
   pull_request:
-    paths:
-      - 'FHEM/**'
-      - 'lib/**'
-      - 'CHANGED'
-      - 'controls_WebAuth.txt'
-      - 'README.md'
-      - '.devcontainer/svn-manifest.txt'
-      - 't/**'
-      - 'cpanfile'
-      - 'scripts/**'
-      - '.github/workflows/fhem_test.yml'
   push:
     paths:
       - 'FHEM/**'

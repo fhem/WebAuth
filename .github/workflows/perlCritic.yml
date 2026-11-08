@@ -5,13 +5,9 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  # Kein paths-Filter: Der Check "perlcritic" ist Required und muss auf jedem PR gemeldet werden.
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'FHEM/**'
-      - 'lib/**'
-      - '.perlcritic'
-      - '.github/workflows/perlCritic.yml'
   workflow_dispatch:
 
 jobs:
