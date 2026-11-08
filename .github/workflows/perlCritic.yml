@@ -20,9 +20,7 @@ jobs:
         with:
           perl-version: '5.38'
           install-modules-with: cpanm
-          # RequireExplicitPackage explizit vorab installieren: Die ObjectPad-Policy verlangt
-          # >= 1.134, cpanm holt sonst über den Task eine ältere Version und bricht ab.
-          install-modules: Perl::Critic::Policy::Modules::RequireExplicitPackage Perl::Critic Task::PerlCriticAllPolicies
+          install-modules: Perl::Critic Task::PerlCriticAllPolicies
           install-modules-args: --notest
       - uses: reviewdog/action-setup@v1
         with:
