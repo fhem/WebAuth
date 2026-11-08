@@ -20,9 +20,9 @@ jobs:
         with:
           perl-version: '5.38'
           install-modules-with: cpanm
-          # Perl::Critic::Grape vorab installieren: Task::PerlCriticAllPolicies bricht sonst
-          # in cpanm ab, weil Grape nach dem Lauf nicht als installiert gilt (siehe fhem/mod_RSL#141).
-          install-modules: Perl::Critic::Grape Perl::Critic Task::PerlCriticAllPolicies
+          # Perl::Critic zuerst in aktueller Version, dann Grape: Die Abhängigkeiten der Task
+          # verlangen sonst eine neuere Perl::Critic-Version, als cpanm vorab installiert hat.
+          install-modules: Perl::Critic Perl::Critic::Grape Task::PerlCriticAllPolicies
           install-modules-args: --notest
       - uses: reviewdog/action-setup@v1
         with:
