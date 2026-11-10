@@ -5,13 +5,9 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  # Kein paths-Filter: Der Check "perlcritic" ist Required und muss auf jedem PR gemeldet werden.
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'FHEM/**'
-      - 'lib/**'
-      - '.perlcritic'
-      - '.github/workflows/perlCritic.yml'
   workflow_dispatch:
 
 jobs:
@@ -24,7 +20,9 @@ jobs:
         with:
           perl-version: '5.38'
           install-modules-with: cpanm
-          install-modules: Perl::Critic Task::PerlCriticAllPolicies
+          # Perl::Critic zuerst in aktueller Version, dann Grape: Die Abhängigkeiten der Task
+          # verlangen sonst eine neuere Perl::Critic-Version, als cpanm vorab installiert hat.
+          install-modules: Perl::Critic Perl::Critic::Grape Task::PerlCriticAllPolicies
           install-modules-args: --notest
       - uses: reviewdog/action-setup@v1
         with:
