@@ -11,5 +11,12 @@
   ],
   "schedule": [
     "before 5am on monday"
+  ],
+  "packageRules": [
+    {
+      "description": "Patch updates are merged automatically",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
   ]
 }
